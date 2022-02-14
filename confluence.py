@@ -112,22 +112,26 @@ class Confluence():
                                             json=data,
                                             headers=headers,
                                             files=files)
+           
+            if not response.ok:
+                data = response.json()
+                message = data['message']
+               
+                log.error(message)
+                log.info('''{method} {url}: {status_code} {reason}
+                Params: {params}
+                Data: {data}
+                Files: {files}'''.format(method=method,
+                                        url=url,
+                                        status_code=response.status_code,
+                                        reason=response.reason,
+                                        params=params,
+                                        data=data,
+                                        files=files))
+                return response.content
         except Exception as err:
+            print(err)
             pass
-            # print(err)
-
-        if not response.ok:
-            log.info('''{method} {url}: {status_code} {reason}
-            Params: {params}
-            Data: {data}
-            Files: {files}'''.format(method=method,
-                                     url=url,
-                                     status_code=response.status_code,
-                                     reason=response.reason,
-                                     params=params,
-                                     data=data,
-                                     files=files))
-            return response.content
 
         # Will probably want to be more robust here, but this should work for now
         return response.json()
@@ -206,11 +210,11 @@ class Confluence():
             log.error('Here\'s the response we got:\n{}'.format(response))
             return labels
 
-        if not any(label['name'] == slug for label in labels):
-            log.error(
-                'Returned labels missing the expected slug: {}'.format(slug))
-            log.warning('Here are the labels we got: {}'.format(labels))
-            return labels
+        # if not any(label['name'] == slug for label in labels):
+        #     log.error(
+        #         'Returned labels missing the expected slug: {}'.format(slug))
+        #     log.warning('Here are the labels we got: {}'.format(labels))
+        #     return labels
 
         log.info(
             'Created the following labels for page {slug}: {labels}'.format(
@@ -259,7 +263,7 @@ class Confluence():
             attachment_path {str} -- The absolute path to the attachment
         """
         path = 'content/{}/child/attachment'.format(post_id)
-        if not os.path.exists(os.path.join('../handbook-md.wiki/',  attachment_path)):
+        if not os.path.exists(os.path.join(attachment_path)):  #../handbook-md.wiki/images', 
             log.error('Attachment {} does not exist'.format(attachment_path))
             return
         log.info(
@@ -401,7 +405,7 @@ class Confluence():
         # With the attachments uploaded, and our new page structure created,
         # we can upload the final content up to Confluence.
         path = 'content/{}'.format(page['id'])
-        response = self.put(path=path, data=new_page)
+        response = self.put(path=path, data=new_page) # in DI's case this call is failing
         # print(response)
 
         page_url = urljoin(self.api_url, response['_links']['webui'])
