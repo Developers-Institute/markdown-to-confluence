@@ -187,9 +187,9 @@ def deploy_file(post_path, args, confluence):
     # Normalize the content into whatever format Confluence expects
     html, attachments = convtoconf(markdown, front_matter=front_matter)
 
-    # static_path = os.path.join(args.git, 'static')
-    # for i, attachment in enumerate(attachments):
-    #     attachments[i] = os.path.join(static_path, attachment.lstrip('/'))
+    static_path = '/home/mark/dev/DI/SAAS/handbook-md.wiki/' # was static
+    for i, attachment in enumerate(attachments):
+        attachments[i] = os.path.join(static_path, attachment.lstrip('/'))
 
     slug_prefix = '_'.join(author.lower() for author in authors)
     post_slug = get_slug(post_path, prefix=slug_prefix)

@@ -31,6 +31,7 @@ def parse(post_path):
             # if in_yaml:
             #     raw_yaml += line
             # else:
+            # sanitised_line = sanitise_line(line)
             markdown += line
     # front_matter = yaml.load(raw_yaml, Loader=yaml.SafeLoader)
     title = get_title(post_path)
@@ -40,29 +41,27 @@ def parse(post_path):
                 'share': 'true'
             }
         }
-    if 'Exporting Spotlight Export to Forecast' in markdown:
-        print('this is the ops handbook')
+
     markdown = markdown.strip()
     sanitised_markdown = sanitise_links(markdown)
 
     return front_matter, sanitised_markdown
 
-def sanitise_links(markdown):
-    # remove any github DI url prefix
-    # https://github.com/Developers-Institute-Internal/handbook-md/wiki/Company-Culture#company-vision
-    
-    prefixes_to_remove = [
-        'https://github.com/Developers-Institute-Internal/handbook-md/wiki/',
-        'https://github.com/Developers-Institute-Internal/',
-        'https://github.com/Developers-Institute-Internal/handbook-md/blob/master/',
-        './handbook-md/blob/master/',
-        './handbook-md/'
+
+prefix_to_add =  '/wiki/display/TESTSPACE/'  # seems to be a still functional way of referring to a page without knowing the id https://support.atlassian.com/confluence-cloud/docs/insert-links-and-anchors/
+prefix_substitutions = [
+        ('https://github.com/Developers-Institute-Internal/handbook-md/blob/master/','/'),
+        ('https://github.com/Developers-Institute-Internal/handbook-md/wiki/',prefix_to_add),
+        ('https://github.com/Developers-Institute-Internal/',prefix_to_add),
+        ('./handbook-md/blob/master/','/'),
+        ('./handbook-md/',prefix_to_add)
     ]
 
 
-
-    for prefix_to_remove in prefixes_to_remove:
-        markdown = re.sub(prefix_to_remove,'./', markdown)
+def sanitise_links(markdown):
+    for prefix in prefix_substitutions:
+        # attachments must remain relative
+        markdown = re.sub(prefix[0], prefix[1], markdown)
     return markdown
 
 def convtoconf(markdown, front_matter={}):
@@ -180,8 +179,6 @@ class ConfluenceRenderer(mistune.Renderer):
         # Check if the image is externally hosted, or hosted as a static
         # file within Journal
         is_external = bool(urlparse(src).netloc)
-        if 'static' in src :
-            print('it has static')
 
         tag_template = '<ac:image>{image_tag}</ac:image>'
         image_tag = '<ri:url ri:value="{}" />'.format(src)
