@@ -63,6 +63,9 @@ def get_slug(filepath, prefix=''):
     # Confluence doesn't support searching for labels with a "-",
     # so we need to adjust it.
     slug = slug.replace('-', '_')
+    slug = slug.replace(',', '_')
+    slug = slug.replace(' ', '_')
+    slug = slug.replace('\'', '_')
     if prefix:
         slug = '{}_{}'.format(prefix, slug)
     return slug

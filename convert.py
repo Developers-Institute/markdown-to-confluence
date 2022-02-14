@@ -6,8 +6,11 @@ import re
 
 from urllib.parse import urlparse
 
+
 def get_title(filepath):
-    return filepath.split('.')[-2].split('/')[-1]
+    filename = filepath.split('.')[-2].split('/')[-1]
+    return re.sub(r"[ ,']", "", filename)
+
 
 YAML_BOUNDARY = '---'
 
@@ -36,11 +39,11 @@ def parse(post_path):
     # front_matter = yaml.load(raw_yaml, Loader=yaml.SafeLoader)
     title = get_title(post_path)
     front_matter = {
-            'title':title,
-            'wiki': {
-                'share': 'true'
-            }
+        'title': title,
+        'wiki': {
+            'share': 'true'
         }
+    }
 
     markdown = markdown.strip()
     sanitised_markdown = sanitise_links(markdown)
@@ -48,14 +51,15 @@ def parse(post_path):
     return front_matter, sanitised_markdown
 
 
-prefix_to_add =  '/wiki/display/TESTSPACE/'  # seems to be a still functional way of referring to a page without knowing the id https://support.atlassian.com/confluence-cloud/docs/insert-links-and-anchors/
+# seems to be a still functional way of referring to a page without knowing the id https://support.atlassian.com/confluence-cloud/docs/insert-links-and-anchors/
+prefix_to_add = '/wiki/display/TESTSPACE/'
 prefix_substitutions = [
-        ('https://github.com/Developers-Institute-Internal/handbook-md/blob/master/','/'),
-        ('https://github.com/Developers-Institute-Internal/handbook-md/wiki/',prefix_to_add),
-        ('https://github.com/Developers-Institute-Internal/',prefix_to_add),
-        ('./handbook-md/blob/master/','/'),
-        ('./handbook-md/',prefix_to_add)
-    ]
+    ('https://github.com/Developers-Institute-Internal/handbook-md/blob/master/', '/'),
+    ('https://github.com/Developers-Institute-Internal/handbook-md/wiki/', prefix_to_add),
+    ('https://github.com/Developers-Institute-Internal/', prefix_to_add),
+    ('./handbook-md/blob/master/', '/'),
+    ('./handbook-md/', prefix_to_add)
+]
 
 
 def sanitise_links(markdown):
@@ -63,6 +67,7 @@ def sanitise_links(markdown):
         # attachments must remain relative
         markdown = re.sub(prefix[0], prefix[1], markdown)
     return markdown
+
 
 def convtoconf(markdown, front_matter={}):
     if front_matter is None:
@@ -104,7 +109,7 @@ class ConfluenceRenderer(mistune.Renderer):
         | (30% width) |      (800px width)       |
         |             |                          |
         ------------------------------------------
-        
+
         Arguments:
             content {str} -- The HTML of the content
         """
@@ -141,7 +146,7 @@ class ConfluenceRenderer(mistune.Renderer):
 
         This is used since Confluence will show the post published as our
         service account.
-        
+
         Arguments:
             author_keys {str} -- The Confluence user keys for each post author
         
