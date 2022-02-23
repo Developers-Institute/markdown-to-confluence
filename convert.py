@@ -52,7 +52,7 @@ def parse(post_path):
 
 
 # seems to be a still functional way of referring to a page without knowing the id https://support.atlassian.com/confluence-cloud/docs/insert-links-and-anchors/
-prefix_to_add = '/wiki/display/TESTSPACE/'
+prefix_to_add = '/wiki/display/HI/'
 prefix_substitutions = [
     ('https://github.com/Developers-Institute-Internal/handbook-md/blob/master/', '/'),
     ('https://github.com/Developers-Institute-Internal/handbook-md/wiki/', prefix_to_add),
@@ -77,7 +77,6 @@ def convtoconf(markdown, front_matter={}):
                 'share': 'true'
             }
         }
-
     author_keys = front_matter.get('author_keys', [])
     renderer = ConfluenceRenderer(authors=author_keys)
     content_html = mistune.markdown(markdown, renderer=renderer)
@@ -86,7 +85,7 @@ def convtoconf(markdown, front_matter={}):
     return page_html, renderer.attachments
 
 
-class ConfluenceRenderer(mistune.Renderer):
+class ConfluenceRenderer(mistune.HTMLRenderer):
     def __init__(self, authors=[]):
         self.attachments = []
         if authors is None:
@@ -162,7 +161,7 @@ class ConfluenceRenderer(mistune.Renderer):
             for user_key in self.authors)
         return '<h1>Authors</h1><p>{}</p>'.format(author_content)
 
-    def block_code(self, code, lang):
+    def block_code(self, code, lang=''):
         return textwrap.dedent('''\
             <ac:structured-macro ac:name="code" ac:schema-version="1">
                 <ac:parameter ac:name="language">{l}</ac:parameter>
