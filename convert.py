@@ -149,7 +149,7 @@ class ConfluenceRenderer(mistune.Renderer):
 
         Arguments:
             author_keys {str} -- The Confluence user keys for each post author
-        
+
         Returns:
             str -- The HTML to prepend to the post specifying the authors
         """

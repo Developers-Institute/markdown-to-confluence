@@ -32,7 +32,7 @@ class Confluence():
                  dry_run=False,
                  _client=None):
         """Creates a new Confluence API client.
-        
+
         Arguments:
             api_url {str} -- The URL to the Confluence API root (e.g. https://wiki.example.com/api/rest/)
             username {str} -- The Confluence service account username
@@ -64,7 +64,7 @@ class Confluence():
 
     def _require_kwargs(self, kwargs):
         """Ensures that certain kwargs have been provided
-        
+
         Arguments:
             kwargs {dict} -- The dict of required kwargs
         """
@@ -88,7 +88,7 @@ class Confluence():
             headers = {}
         headers.update(API_HEADERS)
 
-        if files:
+        if True:
             headers.update(MULTIPART_HEADERS)
 
         if data:
@@ -107,27 +107,27 @@ class Confluence():
                 return {}
         try:
             response = self._session.request(method=method,
-                                            url=url,
-                                            params=params,
-                                            json=data,
-                                            headers=headers,
-                                            files=files)
-           
+                                             url=url,
+                                             params=params,
+                                             json=data,
+                                             headers=headers,
+                                             files=files)
+
             if not response.ok:
                 data = response.json()
                 message = data['message']
-               
+
                 log.error(message)
                 log.info('''{method} {url}: {status_code} {reason}
                 Params: {params}
                 Data: {data}
                 Files: {files}'''.format(method=method,
-                                        url=url,
-                                        status_code=response.status_code,
-                                        reason=response.reason,
-                                        params=params,
-                                        data=data,
-                                        files=files))
+                                         url=url,
+                                         status_code=response.status_code,
+                                         reason=response.reason,
+                                         params=params,
+                                         data=data,
+                                         files=files))
                 return response.content
         except Exception as err:
             print(err)
@@ -155,7 +155,7 @@ class Confluence():
         Specifically, this leverages a Confluence Query Language (CQL) query
         against the Confluence API. We assume that each slug is unique, at
         least to the provided space/ancestor_id.
-        
+
         Arguments:
             space {str} -- The Confluence space to use for filtering posts
             slug {str} -- The page slug
@@ -185,7 +185,7 @@ class Confluence():
 
         We specifically require a slug to be provided, since this is how we
         determine if a page exists. Any other tags are optional.
-        
+
         Keyword Arguments:
             page_id {str} -- The ID of the existing page to which the label should apply
             slug {str} -- The page slug to use as the label value
@@ -243,12 +243,20 @@ class Confluence():
             },
             'ancestors': [{
                 'id': str(ancestor_id)
+            },
+            ],
+            "metadata": {
+                "properties": {
                     "editor": {
+                        "value": "V2"
+                    }
+                }
+            }
         }
 
     def get_attachments(self, post_id):
         """Gets the attachments for a particular Confluence post
-        
+
         Arguments:
             post_id {str} -- The Confluence post ID
         """
@@ -257,13 +265,14 @@ class Confluence():
 
     def upload_attachment(self, post_id=None, attachment_path=None):
         """Uploads an attachment to a Confluence post
-        
+
         Keyword Arguments:
             post_id {str} -- The Confluence post ID
             attachment_path {str} -- The absolute path to the attachment
         """
         path = 'content/{}/child/attachment'.format(post_id)
-        if not os.path.exists(os.path.join(attachment_path)):  #../handbook-md.wiki/images', 
+        # ../handbook-md.wiki/images',
+        if not os.path.exists(os.path.join(attachment_path)):
             log.error('Attachment {} does not exist'.format(attachment_path))
             return
         log.info(
@@ -301,7 +310,7 @@ class Confluence():
 
         If an ancestor_id is specified, then the page will be created as a
         child of that ancestor page.
-        
+
         Keyword Arguments:
             content {str} -- The HTML content to upload (required)
             space {str} -- The Confluence space where the page should reside
@@ -328,7 +337,7 @@ class Confluence():
             response = self.post(path='content/', data=page)
         except Exception as err:
             pass
-            #print(err)
+            # print(err)
 
         page_id = response['id']
         page_url = urljoin(self.api_url, response['_links']['webui'])
@@ -363,7 +372,7 @@ class Confluence():
 
         This involves updating the attachments stored on Confluence, uploading
         the page content, and finally updating the labels.
-        
+
         Keyword Arguments:
             post_id {str} -- The ID of the Confluence post
             content {str} -- The page represented in Confluence storage format
@@ -405,7 +414,8 @@ class Confluence():
         # With the attachments uploaded, and our new page structure created,
         # we can upload the final content up to Confluence.
         path = 'content/{}'.format(page['id'])
-        response = self.put(path=path, data=new_page) # in DI's case this call is failing
+        # in DI's case this call is failing
+        response = self.put(path=path, data=new_page)
         # print(response)
 
         page_url = urljoin(self.api_url, response['_links']['webui'])
