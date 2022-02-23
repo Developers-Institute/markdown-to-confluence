@@ -243,7 +243,7 @@ class Confluence():
             },
             'ancestors': [{
                 'id': str(ancestor_id)
-            }]
+                    "editor": {
         }
 
     def get_attachments(self, post_id):
