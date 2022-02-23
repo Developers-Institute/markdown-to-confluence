@@ -1,3 +1,5 @@
+# Please use Dev branch for DI specific modifications.  We can merge to main in a way that can be pr'd upstream
+
 # markdown-to-confluence
 
 Converts and deploys a Markdown file to Confluence.
