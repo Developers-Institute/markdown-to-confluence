@@ -2,12 +2,25 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "env": {"CONFLUENCE_USERNAME" : "mark@developersinstitute.ac.nz"},
-            "args": ["--api_url", "https://developersinstitute.atlassian.net/wiki/rest/api", "--password", "", "--space", "TESTSPACE", "--ancestor_id", "685015175", "--folder", "/home/mark/dev/DI/SAAS/handbook-md.wiki/" ],
+            "env": {
+                "CONFLUENCE_USERNAME": "mark@developersinstitute.ac.nz"
+            },
+            "args": [
+                "--api_url",
+                "https://developersinstitute.atlassian.net/wiki/rest/api",
+                "--password",
+                "Your Confluence API key",
+                "--space",
+                "HI",
+                "--ancestor_id",
+                "707395675",
+                "--folder",
+                "../handbook-md.wiki/"
+            ],
             "name": "Python: Launch Program",
             "type": "python",
             "request": "launch",
-            "program":"${workspaceFolder}/markdown-to-confluence.py",
+            "program": "${workspaceFolder}/markdown-to-confluence.py",
             "console": "integratedTerminal"
         }
     ]
